@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Image Hangman</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🎭 Custom Image Hangman</h1>
+            <p>Upload your image and watch the noose draw around it!</p>
+        </header>
+
+        <!-- Upload Screen -->
+        <div class="screen" id="uploadScreen">
+            <div class="upload-card">
+                <div class="upload-icon">📷</div>
+                <h2>Upload Your Image</h2>
+                <p>Choose an image to be your "hanging person"</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageInput" accept="image/*">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon-large">📁</div>
+                        <p>Click to upload or drag & drop</p>
+                        <span class="upload-hint">Supports JPG, PNG, GIF</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="uploadBtn" disabled>
+                    <span class="btn-text">Upload Image</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Difficulty Screen -->
+        <div class="screen" id="difficultyScreen" style="display: none;">
+            <div class="difficulty-card">
+                <h2>Choose Your Challenge</h2>
+                <p>Select the difficulty level for your hangman game</p>
+                
+                <div class="difficulty-grid">
+                    <div class="difficulty-option active" data-difficulty="easy">
+                        <div class="difficulty-icon">😊</div>
+                        <h3>Easy</h3>
+                        <p class="difficulty-desc">3-5 letters</p>
+                        <p class="difficulty-examples">CAT, DOG, SUN, TREE</p>
+                    </div>
+                    
+                    <div class="difficulty-option" data-difficulty="medium">
+                        <div class="difficulty-icon">😐</div>
+                        <h3>Medium</h3>
+                        <p class="difficulty-desc">6-8 letters</p>
+                        <p class="difficulty-examples">PROGRAM, COMPUTER</p>
+                    </div>
+                    
+                    <div class="difficulty-option" data-difficulty="hard">
+                        <div class="difficulty-icon">😰</div>
+                        <h3>Hard</h3>
+                        <p class="difficulty-desc">9+ letters</p>
+                        <p class="difficulty-examples">JAVASCRIPT, PROGRAMMING</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="startGameBtn">
+                    <span class="btn-text">Start Game</span>
+                    <span class="btn-icon">🎮</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="screen" id="gameScreen" style="display: none;">
+            <div class="game-container">
+                <!-- Game Header -->
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Lives</span>
+                            <span class="stat-value" id="lives">6</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Difficulty</span>
+                            <span class="stat-value" id="difficultyDisplay">Easy</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Word</span>
+                            <span class="stat-value" id="wordDisplay"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Canvas -->
+                <div class="canvas-section">
+                    <canvas id="gameCanvas" width="500" height="600"></canvas>
+                </div>
+
+                <!-- Game Controls -->
+                <div class="game-controls">
+                    <div class="input-section">
+                        <div class="input-group">
+                            <input type="text" id="letterInput" maxlength="1" placeholder="Enter a letter">
+                            <button class="btn btn-secondary" id="guessBtn">Guess</button>
+                        </div>
+                        <p class="input-hint">Press Enter to guess</p>
+                    </div>
+
+                    <div class="used-letters">
+                        <h3>Used Letters</h3>
+                        <div id="usedLetters" class="letters-grid"></div>
+                    </div>
+
+                    <div class="control-buttons">
+                        <button class="btn btn-outline" id="positionBtn">Position Image</button>
+                        <button class="btn btn-outline" id="newGameBtn">New Game</button>
+                        <button class="btn btn-outline" id="changeImageBtn">Change Image</button>
+                    </div>
+                </div>
+
+                <!-- Image Position Controls -->
+                <div class="position-controls" id="positionControls" style="display: none;">
+                    <h3>Position Your Image</h3>
+                    <div class="control-group">
+                        <label>X Position: <span id="xPos">0</span></label>
+                        <input type="range" id="xSlider" min="-100" max="100" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>Y Position: <span id="yPos">0</span></label>
+                        <input type="range" id="ySlider" min="-100" max="100" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>Size: <span id="sizePos">100</span>%</label>
+                        <input type="range" id="sizeSlider" min="50" max="150" value="100">
+                    </div>
+                    <div class="control-buttons">
+                        <button class="btn btn-secondary" id="removeBgBtn">Remove Background</button>
+                        <button class="btn btn-secondary" id="detectFaceBtn">Detect Face</button>
+                        <button class="btn btn-outline" id="resetPosBtn">Reset Position</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div class="modal" id="gameOverModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="gameResult"></h2>
+                </div>
+                <div class="modal-body">
+                    <p id="gameMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+                    <button class="btn btn-outline" id="backToMenuBtn">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
